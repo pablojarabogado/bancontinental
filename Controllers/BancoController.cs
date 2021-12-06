@@ -139,6 +139,12 @@ namespace bancontinental.Controllers
 
             await _db.AddAsync(bancoCuentaTrnsaccion);
             await _db.SaveChangesAsync();
+            
+            /*
+            bancoOrigen.saldo = bancoOrigen.saldo - bancoCuentaTrnsaccion.monto;
+            await _db.AddAsync(bancoOrigen);
+            await _db.SaveChangesAsync();
+            */
             return CreatedAtRoute("getTranasccion" , new {idNroTransaccion = bancoCuentaTrnsaccion.idNroTransaccion}, bancoCuentaTrnsaccion);
             
         }
