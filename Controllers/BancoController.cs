@@ -40,8 +40,9 @@ namespace bancontinental.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> getEnviosPorCuenta(int miNroCuenta)
         {
-            var obj = await _db.bancosCuentasTransacciones.FirstOrDefaultAsync(c => c.nroCuentaOrigen == miNroCuenta && c.envio == true);
-            if (obj == null)
+            
+            var obj = await _db.bancosCuentasTransacciones.AllAsync(c => c.nroCuentaOrigen == miNroCuenta && c.envio == true) ;
+            if (!obj)
             {
                 return NotFound("No existe envios desde mi cuenta número: " + miNroCuenta);
             }
@@ -129,10 +130,11 @@ namespace bancontinental.Controllers
                 return BadRequest("No puede enviar dinero a la misma cuenta");
             }
 
-            if (bancoCuentaTrnsaccion.monto < bancoOrigen.saldo)
+            if (bancoOrigen.saldo.CompareTo(bancoCuentaTrnsaccion.monto) < 0)
             {
                 return BadRequest("No tiene saldo suficiente para la transacción");
             }
+
 
             bancoCuentaTrnsaccion.estado = "COMPLETADO";
             bancoCuentaTrnsaccion.envio = true;
@@ -140,11 +142,11 @@ namespace bancontinental.Controllers
             await _db.AddAsync(bancoCuentaTrnsaccion);
             await _db.SaveChangesAsync();
             
-            /*
+            
             bancoOrigen.saldo = bancoOrigen.saldo - bancoCuentaTrnsaccion.monto;
-            await _db.AddAsync(bancoOrigen);
+            _db.Update(bancoOrigen);
             await _db.SaveChangesAsync();
-            */
+            
             return CreatedAtRoute("getTranasccion" , new {idNroTransaccion = bancoCuentaTrnsaccion.idNroTransaccion}, bancoCuentaTrnsaccion);
             
         }
