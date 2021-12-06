@@ -42,7 +42,7 @@ namespace bancontinental.Controllers
         {
             
             var obj = await _db.bancosCuentasTransacciones.AllAsync(c => c.nroCuentaOrigen == miNroCuenta && c.envio == true) ;
-            if (!obj)
+            if (obj)
             {
                 return NotFound("No existe envios desde mi cuenta número: " + miNroCuenta);
             }
